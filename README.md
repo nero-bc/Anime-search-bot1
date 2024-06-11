@@ -54,7 +54,7 @@ To run this project, you will need to add the following environment variables to
 
 ### Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/MiyukiKun/Anime_Gallery_Bot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Harry78909/Anime_Gallery_Bot)
  
 
 ## Support
