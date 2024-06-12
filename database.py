@@ -4,8 +4,8 @@ from config import client, database_name, default_gogoanime_token, default_auth_
 default_data = {
     "_id": "GogoAnime",
     "url": default_url,
-    "gogoanime_token": default_gogoanime_token,
-    "auth_token": default_auth_token
+    "gogoanime": default_gogoanime_token,
+    "auth": default_auth_token
 }
 
 class ConfigDB:
