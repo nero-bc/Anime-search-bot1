@@ -1,6 +1,6 @@
 from pyrogram import Client as app, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from API.Kissmangaapi import kissmangaapi as kiss
+from API.kissmangaapi import kissmangaapi as kiss
 import Helper.formating_results as format
 import os
 
