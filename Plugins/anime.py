@@ -1,6 +1,6 @@
 from pyrogram import Client as app, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from API.Gogoanimeapi import Gogoanimeapi as Gogo
+from API.gogoanimeapi import Gogo
 import Helper.formating_results as format
 from database import ConfigDB
 from Helper.helper_functions import *
