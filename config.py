@@ -7,16 +7,17 @@ from pymongo.collection import Collection
 
 dotenv.load_dotenv(".env")
 
-API_ID = os.environ.get('API_ID')
-API_HASH = os.environ.get('API_HASH')
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
+api_id = int(os.environ.get('API_ID'))
+api_hash = os.environ.get('API_HASH')
+bot_token = os.environ.get('BOT_TOKEN')
 db_url = os.environ.get('MONGO_DB_URL')
 database_name = os.environ.get('DATABASE_NAME')
 owner_id = int(os.environ.get('OWNER_ID'))
 bot_username = os.environ.get('BOT_USERNAME')
 
-#bot = TelegramClient('bot', api_id, api_hash).start(bot_token=bot_token)
-bot = TelegramClient('bot', API_ID, API_HASH).start(bot_token=BOT_TOKEN)
+# Initialize the Telegram client correctly
+bot = TelegramClient('psbots', api_id, api_hash).start(bot_token=bot_token)
+
 client = MongoClient(db_url, tls=True)
 data = Collection(client[database_name], 'ConfigDB').find_one({"_id": "GogoAnime"})
 
