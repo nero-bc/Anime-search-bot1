@@ -15,7 +15,7 @@ async def stats(client, message):
     if "export" in message.text:
         with open("userdata.json", "w") as final:
             json.dump(userdata, final, indent=4)
-        await message.reply_text(f"Statistics for bot:\n Total number of users: {len(userdata)}", reply_markup="userdata.json")
+        await message.reply_document("userdata.json", caption=f"Statistics for bot:\n Total number of users: {len(userdata)}")
         os.remove("userdata.json")
     else:
         await message.reply_text(f"Statistics for bot:\n Total number of users: {len(userdata)}")
@@ -26,17 +26,25 @@ async def broadcast(client, message):
     userdata = users.full()
     for i in userdata:
         try:
-            await client.send_message(i['_id'], msg)
+            await client.send_message(i['_id'], msg.text)
             await asyncio.sleep(0.5)
         except Exception as e:
             print(e)
 
 @app.on_message(filters.command("update_token") & filters.user(owner_id))
 async def update_token(client, message):
+    if not message.reply_to_message or not message.reply_to_message.text:
+        await message.reply_text("Please reply to a message containing the tokens and URL.")
+        return
+
     msg = message.reply_to_message.text.split("\n")
-    url = msg[0].split("	")[0]
-    gogoanime = msg[1][6]
-    auth = msg[0][6]
+    if len(msg) < 3:
+        await message.reply_text("Invalid format. Please provide URL, auth token, and gogoanime token in the following format:\nURL\nauth_token\ngogoanime_token")
+        return
+
+    url = msg[0].strip()
+    auth = msg[1].strip()
+    gogoanime = msg[2].strip()
 
     cdb.modify(
         {
@@ -52,3 +60,5 @@ async def update_token(client, message):
 
     await message.reply_text("Token Updated Successfully.")
 
+#if __name__ == "__main__":
+   # bot.run()
