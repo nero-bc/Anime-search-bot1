@@ -16,7 +16,7 @@ owner_id = int(os.environ.get('OWNER_ID'))
 bot_username = os.environ.get('BOT_USERNAME')
 
 # Initialize the Telegram client correctly
-bot = TelegramClient('psbots', api_id, api_hash).start(bot_token=bot_token)
+bot = TelegramClient('anime', api_id, api_hash).start(bot_token=bot_token)
 
 client = MongoClient(db_url, tls=True)
 data = Collection(client[database_name], 'ConfigDB').find_one({"_id": "GogoAnime"})
