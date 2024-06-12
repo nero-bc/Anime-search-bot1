@@ -1,4 +1,4 @@
-from pyrogram import Client
+from pyrogram import Client as app
 from database import UsersDB
 from config import bot_username
 from Helper.helper import start_text, help_text
