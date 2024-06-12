@@ -18,7 +18,7 @@ bot_username = os.environ.get('BOT_USERNAME')
 print(f"API_ID: {api_id}, API_HASH: {api_hash}, BOT_TOKEN: {bot_token}")
 
 # Initialize the Pyrogram client correctly
-bot = PyrogramClient('bot', api_id=api_id, api_hash=api_hash, bot_token=bot_token)
+#bot = PyrogramClient('bot', api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 # Start the Pyrogram client
 #bot.start()
