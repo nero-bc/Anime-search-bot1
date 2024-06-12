@@ -1,4 +1,4 @@
-from pyrogram import Client, filters
+from pyrogram import Client as app, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from Helper import formating_results as format
 from database import ConfigDB
