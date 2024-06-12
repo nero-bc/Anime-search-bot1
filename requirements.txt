@@ -1,4 +1,4 @@
-telethon
+
 requests_html
 requests
 bs4
@@ -7,6 +7,7 @@ pymongo
 dnspython
 #####
 pyrogram
+Tgcrypto
 Flask
 gunicorn
 aiohttp
