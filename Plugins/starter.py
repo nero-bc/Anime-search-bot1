@@ -1,11 +1,11 @@
 from pyrogram import Client
 from database import UsersDB
-from config import bot, bot_username
+from config import bot_username
 from Helper.helper import start_text, help_text
 
 users = UsersDB()
 
-app = Client("my_bot")
+#app = Client("my_bot")
 
 @app.on_message(filters.command(["start", "start@" + bot_username]))
 async def start_command(client, message):
@@ -23,5 +23,5 @@ async def help_command(client, message):
         help_text
     )
 
-if __name__ == '__main__':
-    app.run()
+#if __name__ == '__main__':
+    #app.run()
