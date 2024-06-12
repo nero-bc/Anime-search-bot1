@@ -6,6 +6,7 @@ python-dotenv
 pymongo
 dnspython
 #####
+pyrogram
 Flask
 gunicorn
 aiohttp
