@@ -1,4 +1,4 @@
-from pyrogram import Client
+from telethon import TelegramClient, events
 from Plugins.starter import Start
 from Plugins.anime import Anime
 from Plugins.manga import Manga
@@ -6,12 +6,12 @@ from Plugins.admin import Admin
 from config import bot
 import traceback
 
-class Bot(Client):
-    def __init__(self):
+class Bot(TelegramClient):
+    def init(self):
         super().__init__(
-            name="my_bot",
-            api_id=bot.api_id,
-            api_hash=bot.api_hash,
+            "my_bot",
+            bot.api_id,
+            bot.api_hash,
             bot_token=bot.bot_token,
             workers=200,
             plugins={"root": "Plugins"},
@@ -32,7 +32,7 @@ class Bot(Client):
         except Exception:
             err_str = traceback.format_exc()
             print(err_str)
-        print(f"{self.get_me().first_name} is started...✨️")
+        print(f"{await self.get_me().first_name} is started...✨️")
 
     async def stop(self, *args):
         await super().stop()
@@ -40,4 +40,4 @@ class Bot(Client):
 
 if __name__ == "__main__":
     bot = Bot()
-    bot.run()
+    bot.run_until_disconnected()
