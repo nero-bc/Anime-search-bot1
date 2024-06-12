@@ -17,10 +17,19 @@ bot_username = os.environ.get('BOT_USERNAME')
 
 bot = TelegramClient('bot', api_id, api_hash).start(bot_token=bot_token)
 client = MongoClient(db_url, tls=True)
-data = Collection(client[database_name], 'ConfigDB').find_one({"_id":"GogoAnime"})
+data = Collection(client[database_name], 'ConfigDB').find_one({"_id": "GogoAnime"})
+
+# Default values from environment variables
+default_gogoanime_token = os.environ.get('DEFAULT_GOGOANIME_TOKEN', 'default_gogoanime_token')
+default_auth_token = os.environ.get('DEFAULT_AUTH_TOKEN', 'default_auth_token')
+default_url = os.environ.get('DEFAULT_URL', 'default_url')
+
+gogoanime_token = data["gogoanime"] if data["gogoanime"] is not None else default_gogoanime_token
+auth_token = data["auth"] if data["auth"] is not None else default_auth_token
+host = data["url"] if data["url"] is not None else default_url
 
 gogo = Gogo(
-        gogoanime_token=data["gogoanime"],
-        auth_token=data["auth"],
-        host=data["url"]
-    )
+    gogoanime_token=gogoanime_token,
+    auth_token=auth_token,
+    host=host
+)
