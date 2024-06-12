@@ -1,12 +1,14 @@
-from telethon import Button
-from config import bot
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from Helper import formating_results as format
 from database import ConfigDB
 from API.gogoanimeapi import Gogo
+
 cdb = ConfigDB()
 
-async def send_details(event, id):
-    data = cdb.find({"_id":"GogoAnime"})
+
+async def send_details(client, event, id):
+    data = cdb.find({"_id": "GogoAnime"})
     gogo = Gogo(
         gogoanime_token=data["gogoanime"],
         auth_token=data["auth"],
@@ -23,28 +25,28 @@ async def send_details(event, id):
 
     search_details = gogo.get_anime_details(id)
     genre = search_details.get('genre')
-    
-    await event.edit('Search Results:')
+
     try:
-        await bot.send_message(
-            event.chat_id,
+        await event.edit_text(
             f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
-            file=search_details.get('image_url', None).replace(" ", '%20'),
-            buttons=[Button.inline(
-                "Download", data=f"Download:{id}:{search_details.get('episodes')}")]
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton("Download", callback_data=f"Download:{id}:{search_details.get('episodes')}")]
+                ]
+            )
+        )
+    except:
+        await event.edit_text(
+            f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton("Download", callback_data=f"longdl:{split_id[1]}:{id[-25:]}:{search_details.get('episodes')}")]
+                ]
+            )
         )
 
-    except:
-        await bot.send_message(
-            event.chat_id,
-            f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
-            file=search_details.get('image_url', None).replace(" ", '%20'),
-            buttons=[Button.inline(
-                "Download", data=f"longdl:{split_id[1]}:{id[-25:]}:{search_details.get('episodes')}")]
-        )
-            
-async def send_download_link(event, id, ep_num):
-    data = cdb.find({"_id":"GogoAnime"})
+async def send_download_link(client, event, id, ep_num):
+    data = cdb.find({"_id": "GogoAnime"})
     gogo = Gogo(
         gogoanime_token=data["gogoanime"],
         auth_token=data["auth"],
@@ -54,9 +56,11 @@ async def send_download_link(event, id, ep_num):
     l2 = gogo.get_stream_link(animeid=id, episode_num=ep_num)
     r1 = format.format_download_results(l1)
     r2 = format.format_download_results(l2)
-    await bot.send_message(
-        event.chat_id,
+    await event.reply_text(
         f"Download Links for episode {ep_num}\n{r1}\n\nStreamable Links:\n{r2}"
     )
-        
-    return True
+
+@app.on_callback_query(filters.regex("Download|longdl"))
+async def callback_send_download_link(client, callback_query):
+    data = callback_query.data.split(":")
+    await send_download_link(client, callback_query.message, data[1], data[2])
