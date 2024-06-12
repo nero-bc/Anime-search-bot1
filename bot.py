@@ -18,8 +18,8 @@ class Bot(Client):
     def __init__(self):
         super().__init__(
             name="Bot",
-            api_hash=api_id,
-            api_id=api_hash,
+            api_hash=api_hash,
+            api_id=api_id,
             plugins={
                 "root": "Plugins"
             },
