@@ -1,22 +1,23 @@
 from pymongo.collection import Collection
 from config import client, database_name, default_gogoanime_token, default_auth_token, default_url
 
-
-from pymongo.collection import Collection
-from config import client, database_name
-
 default_data = {
-            "_id": "GogoAnime",
-            "url": default_url,
-            "gogoanime_token": default_gogoanime_token,
-            "auth_token": default_auth_token
+    "_id": "GogoAnime",
+    "url": default_url,
+    "gogoanime_token": default_gogoanime_token,
+    "auth_token": default_auth_token
 }
+
 class ConfigDB:
     def __init__(self):
         self.col = Collection(client[database_name], 'ConfigDB')
         
     def find(self, data):
-        return self.col.find_one(data)
+        result = self.col.find_one(data)
+        if result:
+            return result
+        else:
+            return default_data
 
     def add(self, data):
         self.col.insert_one(data)
