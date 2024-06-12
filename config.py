@@ -21,7 +21,7 @@ print(f"API_ID: {api_id}, API_HASH: {api_hash}, BOT_TOKEN: {bot_token}")
 bot = PyrogramClient('bot', api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 # Start the Pyrogram client
-bot.start()
+#bot.start()
 
 client = MongoClient(db_url, tls=True)
 data = Collection(client[database_name], 'ConfigDB').find_one({"_id": "GogoAnime"})
