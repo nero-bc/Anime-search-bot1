@@ -20,13 +20,18 @@ client = MongoClient(db_url, tls=True)
 data = Collection(client[database_name], 'ConfigDB').find_one({"_id": "GogoAnime"})
 
 # Default values from environment variables
-gogoanime_token = os.environ.get('DEFAULT_GOGOANIME_TOKEN', 'default_gogoanime_token')
-auth_token = os.environ.get('DEFAULT_AUTH_TOKEN', 'default_auth_token')
-host = os.environ.get('DEFAULT_URL', 'default_url')
+default_gogoanime_token = os.environ.get('DEFAULT_GOGOANIME_TOKEN', 'default_gogoanime_token')
+default_auth_token = os.environ.get('DEFAULT_AUTH_TOKEN', 'default_auth_token')
+default_url = os.environ.get('DEFAULT_URL', 'default_url')
 
-#gogoanime_token = data["gogoanime"] if data["gogoanime"] is not None else default_gogoanime_token
-#auth_token = data["auth"] if data["auth"] is not None else default_auth_token
-£host = data["url"] if data["url"] is not None else default_url
+if data:
+    gogoanime_token = data.get("gogoanime", default_gogoanime_token)
+    auth_token = data.get("auth", default_auth_token)
+    host = data.get("url", default_url)
+else:
+    gogoanime_token = default_gogoanime_token
+    auth_token = default_auth_token
+    host = default_url
 
 gogo = Gogo(
     gogoanime_token=gogoanime_token,
