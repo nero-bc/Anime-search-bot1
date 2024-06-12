@@ -110,7 +110,8 @@ async def event_handler_download(client, message):
 @app.on_callback_query(filters.regex("lt:"))
 async def callback_for_latest(client, callback_query):
     data = callback_query.data
-    await send_details(callback_query, data)
+    id = data.split(":")[1]  # Extracting the ID from the callback data
+    await send_details(callback_query, id)
 
 @app.on_callback_query(filters.regex("Download"))
 async def callback_for_download(client, callback_query):
@@ -151,7 +152,7 @@ async def callback_for_download_long(client, callback_query):
             break
     for i in range(int(x[3])):
         buttons[current_row].append(InlineKeyboardButton(str(i+1), callback_data=f'spp:{i+1}:{x[2]}:{x[1]}'))
-        if (i+1)        % 5 == 0:
+        if (i+1) % 5 == 0:
             buttons.append([])
             current_row += 1
     await callback_query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(buttons))
@@ -207,12 +208,11 @@ async def callback_for_downlink_long(client, callback_query):
 @app.on_callback_query(filters.regex("dets:"))
 async def callback_for_details(client, callback_query):
     data = callback_query.data
-    x = data.split(":")
-    await send_details(callback_query, x[1])
+    id = data.split(":")[1]  # Extracting the ID from the callback data
+    await send_details(callback_query, id)
 
 @app.on_callback_query(filters.regex("split:"))
 async def callback_for_details_long(client, callback_query):
     data = callback_query.data
-    await send_details(callback_query, data)
-
-
+    id = data.split(":")[1]  # Extracting the ID from the callback data
+    await send_details(callback_query, id)
