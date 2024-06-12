@@ -5,6 +5,12 @@ from config import client, database_name, default_gogoanime_token, default_auth_
 from pymongo.collection import Collection
 from config import client, database_name
 
+default_data = {
+            "_id": "GogoAnime",
+            "url": default_url,
+            "gogoanime_token": default_gogoanime_token,
+            "auth_token": default_auth_token
+}
 class ConfigDB:
     def __init__(self):
         self.col = Collection(client[database_name], 'ConfigDB')
@@ -20,14 +26,7 @@ class ConfigDB:
             self.col.find_one_and_update(search_dict, {'$set': new_dict})
         except Exception as e:
             print(f"Exception in ConfigDB -> modify\n\n{e}")
-
-    def set_default_values(self, url, gogoanime_token, auth_token):
-        default_data = {
-            "_id": "GogoAnime",
-            "url": default_url,
-            "gogoanime_token": default_gogoanime_token,
-            "auth_token": default_auth_token
-        }
+            
         existing_data = self.find({"_id": "GogoAnime"})
         if existing_data:
             self.modify({"_id": "GogoAnime"}, default_data)
