@@ -2,6 +2,7 @@ from pyrogram import Client as app, filters
 from database import UsersDB, ConfigDB
 import json
 import os
+from config import owner_id
 import asyncio
 
 users = UsersDB()
