@@ -67,9 +67,9 @@ async def send_download_link(client, message, anime_id, episode_num):
         host=data["url"]
          )
     download_links = gogo.get_episodes_link(anime_id, episode_num)
-    r1 = format_download_results(download_links)
+    r1 = format.format_download_results(download_links)
     stream_links = gogo.get_stream_link(anime_id, episode_num)
-    r2 = format_download_results(stream_links).split()
+    r2 = format.format_download_results(stream_links).split()
 
     # Debugging: print r2 contents
     print(f"r2 contents: {r2}")
