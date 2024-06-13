@@ -60,6 +60,7 @@ async def event_handler_anime(client, message):
                 ]])
             )
 
+
 @app.on_message(filters.command(["batch"]))
 async def event_handler_batch(client, message):
     if message.chat.id < 0:
