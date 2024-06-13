@@ -59,46 +59,36 @@ async def send_details(client, event, id, page=1):
         )
 
 
-async def send_download_link(client, message, id, ep_num):
-    data = cdb.find({"_id": "GogoAnime"})
-    gogo = Gogo(
-        gogoanime_token=data["gogoanime"],
-        auth_token=data["auth"],
-        host=data["url"]
-    )
-    l1 = gogo.get_episodes_link(animeid=id, episode_num=ep_num)
-    l2 = gogo.get_stream_link(animeid=id, episode_num=ep_num)
-    
-    # Assuming format_download_results returns a formatted string, we split it
-    r1 = format.format_download_results(l1).split()
-    r2 = format.format_download_results(l2).split()
+async def send_download_link(client, message, anime_id, episode_num):
+    download_links = gogo.get_episodes_link(anime_id, episode_num)
+    r1 = format_download_results(download_links)
+    stream_links = gogo.get_stream_link(anime_id, episode_num)
+    r2 = format_download_results(stream_links).split()
 
-    download_buttons = []
-    stream_buttons = []
+    # Debugging: print r2 contents
+    print(f"r2 contents: {r2}")
 
-    # Assuming the split results are in pairs of "label link"
-    for i in range(0, len(r1), 2):
-        label = r1[i]
-        link = r1[i + 1]
-        download_buttons.append([InlineKeyboardButton(label, url=link)])
+    if not r2:
+        await message.reply("No stream links found.")
+        return
 
+    buttons = []
     for i in range(0, len(r2), 2):
-        label = r2[i]
-        link = r2[i + 1]
-        stream_buttons.append([InlineKeyboardButton(label, url=link)])
+        try:
+            text = r2[i]
+            link = r2[i + 1]
+            buttons.append([InlineKeyboardButton(text, url=link)])
+        except IndexError:
+            print(f"IndexError at i={i}, r2={r2}")
+            break  # Exit the loop if there's an IndexError
 
-    navigation_buttons = [
-        InlineKeyboardButton("Previous", callback_data=f"Download:{id}:{ep_num-1}") if ep_num > 1 else InlineKeyboardButton(" ", callback_data="noop"),
-        InlineKeyboardButton(f"Ep {ep_num}", callback_data="noop"),
-        InlineKeyboardButton("Next", callback_data=f"Download:{id}:{ep_num+1}") if ep_num < len(l1) else InlineKeyboardButton(" ", callback_data="noop")
-    ]
-
-    buttons = download_buttons + stream_buttons + [navigation_buttons]
-
-    await message.reply_text(
-        f"Download Links for episode {ep_num}\n",
+    # Send message with buttons
+    await message.reply(
+        text="Streamable Links:",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
+
+
 
 
 
