@@ -1,3 +1,4 @@
+import logging
 from pyrogram import Client as app, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from Helper import formating_results as format
@@ -60,42 +61,50 @@ async def send_details(client, event, id, page=1):
 
 
 async def send_download_link(client, message, anime_id, episode_num):
-    data = cdb.find({"_id": "GogoAnime"})
-    gogo = Gogo(
-        gogoanime_token=data["gogoanime"],
-        auth_token=data["auth"],
-        host=data["url"]
-         )
-    download_links = gogo.get_episodes_link(anime_id, episode_num)
-    r1 = format.format_download_results(download_links)
-    stream_links = gogo.get_stream_link(anime_id, episode_num)
-    r2 = format.format_download_results(stream_links).split()
+    try:
+        data = cdb.find({"_id": "GogoAnime"})
+        gogo = Gogo(
+            gogoanime_token=data["gogoanime"],
+            auth_token=data["auth"],
+            host=data["url"]
+        )
+        
+        download_links = gogo.get_episodes_link(anime_id, episode_num)
+        stream_links = gogo.get_stream_link(anime_id, episode_num)
+        
+        # Use the updated format_download_results function
+        download_qualities, download_links = format_download_results(download_links)
+        stream_qualities, stream_links = format_download_results(stream_links)
+        
+        # Debugging: print qualities and links
+        logging.info(f"download_qualities: {download_qualities}")
+        logging.info(f"download_links: {download_links}")
+        logging.info(f"stream_qualities: {stream_qualities}")
+        logging.info(f"stream_links: {stream_links}")
 
-    # Debugging: print r2 contents
-    print(f"r2 contents: {r2}")
+        if not stream_links:
+            await message.reply("No stream links found.")
+            return
 
-    if not r2:
-        await message.reply("No stream links found.")
-        return
+        buttons = []
+        for i in range(len(stream_links)):
+            try:
+                text = stream_qualities[i]
+                link = stream_links[i]
+                # Check if the link is valid
+                if link:
+                    buttons.append([InlineKeyboardButton(text, url=link)])
+            except IndexError:
+                logging.error(f"IndexError at i={i}, stream_qualities={stream_qualities}, stream_links={stream_links}")
+                break  # Exit the loop if there's an IndexError
 
-    buttons = []
-    for i in range(0, len(r2), 2):
-        try:
-            text = r2[i]
-            link = r2[i + 1]
-            buttons.append([InlineKeyboardButton(text, url=link)])
-        except IndexError:
-            print(f"IndexError at i={i}, r2={r2}")
-            break  # Exit the loop if there's an IndexError
-
-    # Send message with buttons
-    await message.reply(
-        text="Streamable Links:",
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
-
-
-
+        # Send message with buttons
+        await message.reply(
+            text="Streamable Links:",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+    except Exception as e:
+        logging.error(f"An error occurred in send_download_link: {e}")
 
 
 @app.on_callback_query(filters.regex("Download|longdl"))
