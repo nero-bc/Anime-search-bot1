@@ -31,7 +31,7 @@ async def send_details(client, event, id, page=1):
     start = (page - 1) * PAGE_SIZE
     end = start + PAGE_SIZE
     buttons = [
-        [InlineKeyboardButton(f"{i}", callback_data=f"Download:{id}:{i}")]
+        InlineKeyboardButton(f"{i}", callback_data=f"Download:{id}:{i}")
         for i in range(start + 1, min(end + 1, episodes + 1))
     ]
 
