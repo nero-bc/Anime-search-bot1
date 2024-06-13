@@ -55,7 +55,10 @@ To run this project, you will need to add the following environment variables to
 ### Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Harry78909/Anime_Gallery_Bot)
- 
+
+ ## Deploy To Koyeb
+
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/Harry78909/Anime-search-bot&env[BOT_TOKEN]&env[API_ID]&env[API_HASH]&env[MONGO_DB_URL]&env[DATABASE_NAME]=Cluster0&env[OWNER_ID]&env[BOT_USERNAME]&env[LOG_CHANNEL]=You%20Dont%20Need%20LogChannel%20To%20Remove%20This%20Variable&run_command=python%20bot.py&branch=rander&name=ps-amine) 
 
 ## Support
 To report any problems, bugs, suggestions visit [@Anime_Gallery_Robot_Support](https://t.me/anime_gallery_robot_support).
