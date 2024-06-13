@@ -60,6 +60,12 @@ async def send_details(client, event, id, page=1):
 
 
 async def send_download_link(client, message, anime_id, episode_num):
+    data = cdb.find({"_id": "GogoAnime"})
+    gogo = Gogo(
+        gogoanime_token=data["gogoanime"],
+        auth_token=data["auth"],
+        host=data["url"]
+        
     download_links = gogo.get_episodes_link(anime_id, episode_num)
     r1 = format_download_results(download_links)
     stream_links = gogo.get_stream_link(anime_id, episode_num)
