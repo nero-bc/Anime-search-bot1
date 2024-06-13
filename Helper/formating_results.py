@@ -20,14 +20,11 @@ def format_home_results(home_results):
     return (names, animeid, epnum)
 
 def format_download_results(download_results):
-    qualitys = list(download_results)
+    qualities = list(download_results)
     links = []
-    for i in qualitys:
+    for i in qualities:
         links.append(download_results.get(i))
-    result = ''
-    for i in range(len(links)):
-        result = f'{result} {qualitys[i]} {links[i]}'
-    return result.strip()  # remove any leading or trailing spaces
+    return qualities, links
 
 def batch_download_txt(name, list_of_links):
     x = ''
