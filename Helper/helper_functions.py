@@ -68,35 +68,38 @@ async def send_download_link(client, message, id, ep_num):
     )
     l1 = gogo.get_episodes_link(animeid=id, episode_num=ep_num)
     l2 = gogo.get_stream_link(animeid=id, episode_num=ep_num)
-    r1 = format.format_download_results(l1)
-    r2 = format.format_download_results(l2)
+    
+    # Assuming format_download_results returns a formatted string, we split it
+    r1 = format.format_download_results(l1).split()
+    r2 = format.format_download_results(l2).split()
 
-    buttons = [
-        [InlineKeyboardButton("Download", url=r1.get('download_link', '#'))],
-        [
-            InlineKeyboardButton("360p", url=r1.get('360p', '#')),
-            InlineKeyboardButton("480p", url=r1.get('480p', '#')),
-            InlineKeyboardButton("720p", url=r1.get('720p', '#'))
-        ],
-        [InlineKeyboardButton("1080p", url=r1.get('1080p', '#'))],
-        [InlineKeyboardButton("Watch Online", url=r2.get('stream_link', '#'))],
-        [
-            InlineKeyboardButton("360p", url=r2.get('360p', '#')),
-            InlineKeyboardButton("480p", url=r2.get('480p', '#')),
-            InlineKeyboardButton("720p", url=r2.get('720p', '#'))
-        ],
-        [InlineKeyboardButton("1080p", url=r2.get('1080p', '#'))],
-        [
-            InlineKeyboardButton("Previous", callback_data=f"Download:{id}:{ep_num-1}") if ep_num > 1 else InlineKeyboardButton(" ", callback_data="noop"),
-            InlineKeyboardButton(f"Ep {ep_num}", callback_data="noop"),
-            InlineKeyboardButton("Next", callback_data=f"Download:{id}:{ep_num+1}") if ep_num < len(l1) else InlineKeyboardButton(" ", callback_data="noop")
-        ]
+    download_buttons = []
+    stream_buttons = []
+
+    # Assuming the split results are in pairs of "label link"
+    for i in range(0, len(r1), 2):
+        label = r1[i]
+        link = r1[i + 1]
+        download_buttons.append([InlineKeyboardButton(label, url=link)])
+
+    for i in range(0, len(r2), 2):
+        label = r2[i]
+        link = r2[i + 1]
+        stream_buttons.append([InlineKeyboardButton(label, url=link)])
+
+    navigation_buttons = [
+        InlineKeyboardButton("Previous", callback_data=f"Download:{id}:{ep_num-1}") if ep_num > 1 else InlineKeyboardButton(" ", callback_data="noop"),
+        InlineKeyboardButton(f"Ep {ep_num}", callback_data="noop"),
+        InlineKeyboardButton("Next", callback_data=f"Download:{id}:{ep_num+1}") if ep_num < len(l1) else InlineKeyboardButton(" ", callback_data="noop")
     ]
+
+    buttons = download_buttons + stream_buttons + [navigation_buttons]
 
     await message.reply_text(
         f"Download Links for episode {ep_num}\n",
         reply_markup=InlineKeyboardMarkup(buttons)
     )
+
 
 
 @app.on_callback_query(filters.regex("Download|longdl"))
