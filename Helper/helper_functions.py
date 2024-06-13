@@ -26,7 +26,7 @@ async def send_details(client, event, id):
     genre = search_details.get('genre')
 
     try:
-        await event.edit_text(
+        await event.edit(
             f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -35,7 +35,7 @@ async def send_details(client, event, id):
             )
         )
     except:
-        await event.edit_text(
+        await event.edit(
             f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
             reply_markup=InlineKeyboardMarkup(
                 [
