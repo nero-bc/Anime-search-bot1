@@ -6,7 +6,6 @@ from API.gogoanimeapi import Gogo
 
 cdb = ConfigDB()
 
-
 async def send_details(client, event, id):
     data = cdb.find({"_id": "GogoAnime"})
     gogo = Gogo(
@@ -44,6 +43,7 @@ async def send_details(client, event, id):
                 ]
             )
         )
+
 
 async def send_download_link(client, event, id, ep_num):
     data = cdb.find({"_id": "GogoAnime"})
