@@ -28,7 +28,7 @@ async def send_details(client, event, id):
 
     buttons = [
         [InlineKeyboardButton(f"Episode {i}", callback_data=f"Download:{id}:{i}")]
-        for i in range(4, episodes + 1)
+        for i in range(1, episodes + 1)
     ]
 
     try:
