@@ -26,9 +26,8 @@ def format_download_results(download_results):
         links.append(download_results.get(i))
     result = ''
     for i in range(len(links)):
-        result = f'{result}[{qualitys[i]}]({links[i]})\n'
-
-    return result
+        result = f'{result} {qualitys[i]} {links[i]}'
+    return result.strip()  # remove any leading or trailing spaces
 
 def batch_download_txt(name, list_of_links):
     x = ''
