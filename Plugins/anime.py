@@ -210,7 +210,7 @@ async def callback_for_downlink_long(client, callback_query):
 async def callback_for_details(client, callback_query):
     data = callback_query.data
     id = data.split(":")[1]  # Extracting the ID from the callback data
-    await send_details(callback_query, id)
+    await send_details(client, callback_query, id)
 
 @app.on_callback_query(filters.regex("split:"))
 async def callback_for_details_long(client, callback_query):
