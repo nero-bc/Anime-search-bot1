@@ -69,12 +69,13 @@ async def send_download_link(client, message, anime_id, episode_num):
             host=data["url"]
         )
         
+        # Fetch download and stream links
         download_links = gogo.get_episodes_link(anime_id, episode_num)
         stream_links = gogo.get_stream_link(anime_id, episode_num)
         
         # Use the updated format_download_results function
-        download_qualities, download_links = format_download_results(download_links)
-        stream_qualities, stream_links = format_download_results(stream_links)
+        download_qualities, download_links = format.format_download_results(download_links)
+        stream_qualities, stream_links = format.format_download_results(stream_links)
         
         # Debugging: print qualities and links
         logging.info(f"download_qualities: {download_qualities}")
@@ -82,30 +83,43 @@ async def send_download_link(client, message, anime_id, episode_num):
         logging.info(f"stream_qualities: {stream_qualities}")
         logging.info(f"stream_links: {stream_links}")
 
-        if not stream_links:
-            await message.reply("No stream links found.")
+        if not stream_links and not download_links:
+            await message.reply("No links found.")
             return
 
         buttons = []
+        
+        # Add stream links to buttons
         for i in range(len(stream_links)):
             try:
                 text = stream_qualities[i]
                 link = stream_links[i]
                 # Check if the link is valid
                 if link:
-                    buttons.append([InlineKeyboardButton(text, url=link)])
+                    buttons.append([InlineKeyboardButton(f"Stream {text}", url=link)])
             except IndexError:
                 logging.error(f"IndexError at i={i}, stream_qualities={stream_qualities}, stream_links={stream_links}")
+                break  # Exit the loop if there's an IndexError
+        
+        # Add download links to buttons
+        for i in range(len(download_links)):
+            try:
+                text = download_qualities[i]
+                link = download_links[i]
+                # Check if the link is valid
+                if link:
+                    buttons.append([InlineKeyboardButton(f"Download {text}", url=link)])
+            except IndexError:
+                logging.error(f"IndexError at i={i}, download_qualities={download_qualities}, download_links={download_links}")
                 break  # Exit the loop if there's an IndexError
 
         # Send message with buttons
         await message.reply(
-            text="Streamable Links:",
+            text="Available Links:",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
     except Exception as e:
         logging.error(f"An error occurred in send_download_link: {e}")
-
 
 @app.on_callback_query(filters.regex("Download|longdl"))
 async def callback_send_download_link(client, callback_query):
