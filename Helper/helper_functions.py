@@ -6,7 +6,10 @@ from API.gogoanimeapi import Gogo
 
 cdb = ConfigDB()
 
-async def send_details(client, event, id):
+PAGE_SIZE = 50
+BUTTONS_PER_ROW = 4
+
+async def send_details(client, event, id, page=1):
     data = cdb.find({"_id": "GogoAnime"})
     gogo = Gogo(
         gogoanime_token=data["gogoanime"],
@@ -25,21 +28,34 @@ async def send_details(client, event, id):
     search_details = gogo.get_anime_details(id)
     genre = search_details.get('genre')
     episodes = search_details.get('episodes')
-
+    start = (page - 1) * PAGE_SIZE
+    end = start + PAGE_SIZE
     buttons = [
-        [InlineKeyboardButton(f"Episode {i}", callback_data=f"Download:{id}:{i}")]
-        for i in range(1, episodes + 1)
+        [InlineKeyboardButton(f"{i}", callback_data=f"Download:{id}:{i}")]
+        for i in range(start + 1, min(end + 1, episodes + 1))
     ]
+
+    # Organize buttons into rows of BUTTONS_PER_ROW
+    rows = [buttons[i:i + BUTTONS_PER_ROW] for i in range(0, len(buttons), BUTTONS_PER_ROW)]
+    
+    # Add pagination buttons if needed
+    pagination_buttons = []
+    if page > 1:
+        pagination_buttons.append(InlineKeyboardButton("Previous", callback_data=f"Page:{id}:{page-1}"))
+    pagination_buttons.append(InlineKeyboardButton(f"Page {page}", callback_data="noop"))
+    if end < episodes:
+        pagination_buttons.append(InlineKeyboardButton("Next", callback_data=f"Page:{id}:{page+1}"))
+    rows.append(pagination_buttons)
 
     try:
         await event.message.edit_text(
             f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {episodes}\nAnimeId: `{id}`",
-            reply_markup=InlineKeyboardMarkup(buttons)
+            reply_markup=InlineKeyboardMarkup(rows)
         )
-    except:
+    except Exception as e:
         await event.message.edit_text(
             f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {episodes}\nAnimeId: `{id}`",
-            reply_markup=InlineKeyboardMarkup(buttons)
+            reply_markup=InlineKeyboardMarkup(rows)
         )
 
 
