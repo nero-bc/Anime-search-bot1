@@ -67,12 +67,13 @@ async def send_details(client, event, id, page=1):
 
     try:
         #await event.answer("please wait")
-        await event.edit_message_media(
+        """await event.edit_message_media(
             event.message.chat.id, 
             event.message.id, 
             InputMediaPhoto(img)
-        )
-        await event.message.edit_text(
+        )"""
+        #await event.message.edit_text(
+        await event.message.send_photo(img,
             text,
             reply_markup=InlineKeyboardMarkup(rows),
             parse_mode=enums.ParseMode.HTML
