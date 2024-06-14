@@ -66,24 +66,21 @@ async def send_details(client, event, id, page=1):
     rows.append(pagination_buttons)
 
     try:
-        #await event.answer("please wait")
-        """await event.edit_message_media(
-            event.message.chat.id, 
-            event.message.id, 
-            InputMediaPhoto(img)
-        )"""
-        #await event.message.edit_text(
-        await event.message.send_photo(img,
-            text,
-            reply_markup=InlineKeyboardMarkup(rows),
-            parse_mode=enums.ParseMode.HTML
+        placeholder_message = await client.send_message(
+            chat_id=message.chat.id,
+            text="Fetching details, please wait...",
         )
-        #await event.answer(MSG_ALRT)
-        
-        #await event.message.edit_text(
-           # text,
-            #reply_markup=InlineKeyboardMarkup(rows)
-        #)
+        # Edit the message to include the photo and caption
+        await client.edit_message_media(
+            chat_id=placeholder_message.chat.id,
+            message_id=placeholder_message.message_id,
+            media=InputMediaPhoto(
+                media=img,
+                caption=text,
+                parse_mode=enums.ParseMode.HTML
+            ),
+            reply_markup=InlineKeyboardMarkup(rows)
+        )
     except Exception as e:
         await event.message.reply_text(e)
         await event.message.edit_text(
