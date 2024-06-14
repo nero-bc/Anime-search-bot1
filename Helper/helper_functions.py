@@ -67,7 +67,7 @@ async def send_details(client, event, id, page=1):
 
     try:
         placeholder_message = await client.send_message(
-            #chat_id=event.message.chat.id,
+            chat_id=event.message.chat.id,
             text="Fetching details, please wait...",
         )
         # Edit the message to include the photo and caption
