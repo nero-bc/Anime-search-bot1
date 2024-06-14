@@ -1,6 +1,6 @@
 import logging
 from pyrogram import Client as app, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto
 from Helper import formating_results as format
 from database import ConfigDB
 from API.gogoanimeapi import Gogo
@@ -27,8 +27,25 @@ async def send_details(client, event, id, page=1):
                 break
 
     search_details = gogo.get_anime_details(id)
-    genre = search_details.get('genre')
+    genre = search_details.get('genres')
     episodes = search_details.get('episodes')
+    title = search_details.get('title')
+    other_names = search_details.get('other_names')
+    year = search_details.get('year')
+    status = search_details.get('status')
+    season = search_details.get('season')
+    img = search_details.get('image_url')
+    text = f"""
+{title}
+{other_names}
+
+ID→ {id}
+Type→ {season}
+Status→ {status}
+Released→ {year}
+Episodes→ {episodes}
+Genres→ {genres}
+"""
     start = (page - 1) * PAGE_SIZE
     end = start + PAGE_SIZE
     buttons = [
@@ -49,13 +66,26 @@ async def send_details(client, event, id, page=1):
     rows.append(pagination_buttons)
 
     try:
-        await event.message.edit_text(
-            f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {episodes}\nAnimeId: `{id}`",
-            reply_markup=InlineKeyboardMarkup(rows)
+        #await event.answer("please wait")
+        await event.edit_message_media(
+            event.message.chat.id, 
+            event.message.id, 
+            InputMediaPhoto(img)
         )
+        await event.message.edit_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(rows),
+            parse_mode=enums.ParseMode.HTML
+        )
+        #await event.answer(MSG_ALRT)
+        
+        #await event.message.edit_text(
+           # text,
+            #reply_markup=InlineKeyboardMarkup(rows)
+        #)
     except Exception as e:
         await event.message.edit_text(
-            f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {genre}\nEpisodes: {episodes}\nAnimeId: `{id}`",
+            text,
             reply_markup=InlineKeyboardMarkup(rows)
         )
 
