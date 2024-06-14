@@ -1,6 +1,6 @@
 import logging
 from pyrogram import Client as app, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto, CallbackQuery
 from Helper import formating_results as format
 from database import ConfigDB
 from API.gogoanimeapi import Gogo
@@ -66,29 +66,28 @@ async def send_details(client, event, id, page=1):
     rows.append(pagination_buttons)
 
     try:
-        placeholder_message = await event.message.reply_text(f"Fetching details, please wait...",
+        #placeholder_message = await event.message.reply_text(f"Fetching details, please wait...",
         )
         # Edit the message to include the photo and caption
-        await event.message.edit_message_media(
-            chat_id=placeholder_message.chat.id,
-            message_id=placeholder_message.message_id,
-            media=InputMediaPhoto(
-                media=img,
+        await event.message.reply_photo(
+                photo=img,
                 caption=text,
-                parse_mode=enums.ParseMode.HTML
-            ),
-            reply_markup=InlineKeyboardMarkup(rows)
+                parse_mode=enums.ParseMode.HTML,
+                reply_markup=InlineKeyboardMarkup(rows)
         )
-    except Exception as e:
-        await event.message.reply_text(e)
+    except:
         await event.message.edit_text(
             text,
             reply_markup=InlineKeyboardMarkup(rows),
             parse_mode=enums.ParseMode.HTML
         )
+    except Exception as e:
+        await event.message.reply_text(e)
 
 
-async def send_download_link(client, message, anime_id, episode_num):
+
+async def send_download_link(client, query: CallbackQuery, anime_id, episode_num):
+    mak = query.data
     try:
         data = cdb.find({"_id": "GogoAnime"})
         gogo = Gogo(
@@ -108,26 +107,26 @@ async def send_download_link(client, message, anime_id, episode_num):
         # Debugging: print qualities and links
         logging.info(f"download_qualities: {download_qualities}")
         logging.info(f"download_links: {download_links}")
-        logging.info(f"stream_qualities: {stream_qualities}")
-        logging.info(f"stream_links: {stream_links}")
+        #logging.info(f"stream_qualities: {stream_qualities}")
+        #logging.info(f"stream_links: {stream_links}")
 
         if not stream_links and not download_links:
-            await message.reply("No links found.")
+            await query.message.edit_text("No links found.")
             return
 
         buttons = []
         
         # Add stream links to buttons
-        for i in range(len(stream_links)):
+        """for i in range(len(stream_links)):
             try:
                 text = stream_qualities[i]
                 link = stream_links[i]
                 # Check if the link is valid
                 if link:
-                    buttons.append([InlineKeyboardButton(f"Stream {text}", url=link)])
+                    buttons.append([InlineKeyboardButton(f"{text}", url=link)])
             except IndexError:
                 logging.error(f"IndexError at i={i}, stream_qualities={stream_qualities}, stream_links={stream_links}")
-                break  # Exit the loop if there's an IndexError
+                break  # Exit the loop if there's an IndexError"""
         
         # Add download links to buttons
         for i in range(len(download_links)):
@@ -136,13 +135,13 @@ async def send_download_link(client, message, anime_id, episode_num):
                 link = download_links[i]
                 # Check if the link is valid
                 if link:
-                    buttons.append([InlineKeyboardButton(f"Download {text}", url=link)])
+                    buttons.append([InlineKeyboardButton(f"{text}", url=link)])
             except IndexError:
                 logging.error(f"IndexError at i={i}, download_qualities={download_qualities}, download_links={download_links}")
                 break  # Exit the loop if there's an IndexError
 
         # Send message with buttons
-        await message.reply(
+        await query.message.edit_caption(
             text="Available Links:",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
