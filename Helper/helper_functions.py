@@ -1,6 +1,6 @@
 import logging
-from pyrogram import Client as app, filters
-from pyrogram.types import enums, InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto
+from pyrogram import Client as app, filters, enums
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto
 from Helper import formating_results as format
 from database import ConfigDB
 from API.gogoanimeapi import Gogo
