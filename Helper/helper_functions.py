@@ -1,6 +1,6 @@
 import logging
 from pyrogram import Client as app, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto
+from pyrogram.types import enums, InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto
 from Helper import formating_results as format
 from database import ConfigDB
 from API.gogoanimeapi import Gogo
@@ -36,15 +36,15 @@ async def send_details(client, event, id, page=1):
     season = search_details.get('season')
     img = search_details.get('image_url')
     text = f"""
-{title}
+<b>{title}</b>
 {other_names}
 
-ID→ {id}
-Type→ {season}
-Status→ {status}
-Released→ {year}
-Episodes→ {episodes}
-Genres→ {genres}
+<b>ID→</b> <code>{id}</code>
+<b>Type→</b> {season}
+<b>Status→</b> {status}
+<b>Released→</b> {year}
+<b>Episodes→</b> {episodes}
+<b>Genres→</b> {genre}
 """
     start = (page - 1) * PAGE_SIZE
     end = start + PAGE_SIZE
@@ -86,7 +86,8 @@ Genres→ {genres}
     except Exception as e:
         await event.message.edit_text(
             text,
-            reply_markup=InlineKeyboardMarkup(rows)
+            reply_markup=InlineKeyboardMarkup(rows),
+            parse_mode=enums.ParseMode.HTML
         )
 
 
