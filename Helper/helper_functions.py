@@ -1,6 +1,6 @@
 import logging
 from pyrogram import Client as app, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup,InputMediaPhoto, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, CallbackQuery
 from Helper import formating_results as format
 from database import ConfigDB
 from API.gogoanimeapi import Gogo
@@ -67,21 +67,20 @@ async def send_details(client, event, id, page=1):
 
     try:
         await event.message.reply_photo(
-                photo=img,
-                caption=text,
-                parse_mode=enums.ParseMode.HTML,
-                reply_markup=InlineKeyboardMarkup(rows)
-        )
-    except:
-        await event.message.edit_text(
-            text,
-            reply_markup=InlineKeyboardMarkup(rows),
-            parse_mode=enums.ParseMode.HTML
+            photo=img,
+            caption=text,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(rows)
         )
     except Exception as e:
-        await event.message.reply_text(e)
-
-
+        try:
+            await event.message.edit_text(
+                text,
+                reply_markup=InlineKeyboardMarkup(rows),
+                parse_mode=enums.ParseMode.HTML
+            )
+        except Exception as e2:
+            await event.message.reply_text(f"An error occurred: {e2}")
 
 async def send_download_link(client, query: CallbackQuery, anime_id, episode_num):
     mak = query.data
@@ -104,26 +103,12 @@ async def send_download_link(client, query: CallbackQuery, anime_id, episode_num
         # Debugging: print qualities and links
         logging.info(f"download_qualities: {download_qualities}")
         logging.info(f"download_links: {download_links}")
-        #logging.info(f"stream_qualities: {stream_qualities}")
-        #logging.info(f"stream_links: {stream_links}")
 
         if not stream_links and not download_links:
             await query.message.edit_text("No links found.")
             return
 
         buttons = []
-        
-        # Add stream links to buttons
-        """for i in range(len(stream_links)):
-            try:
-                text = stream_qualities[i]
-                link = stream_links[i]
-                # Check if the link is valid
-                if link:
-                    buttons.append([InlineKeyboardButton(f"{text}", url=link)])
-            except IndexError:
-                logging.error(f"IndexError at i={i}, stream_qualities={stream_qualities}, stream_links={stream_links}")
-                break  # Exit the loop if there's an IndexError"""
         
         # Add download links to buttons
         for i in range(len(download_links)):
@@ -150,4 +135,4 @@ async def callback_send_download_link(client, callback_query):
     data = callback_query.data.split(":")
     anime_id = data[1]
     episode_num = int(data[2])
-    await send_download_link(client, callback_query.message, anime_id, episode_num)
+    await send_download_link(client, callback_query, anime_id, episode_num)
