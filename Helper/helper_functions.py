@@ -66,12 +66,12 @@ async def send_details(client, event, id, page=1):
     rows.append(pagination_buttons)
 
     try:
-        placeholder_message = await client.send_message(
+        placeholder_message = await event.message.reply_text(
             chat_id=event.message.chat.id,
             text="Fetching details, please wait...",
         )
         # Edit the message to include the photo and caption
-        await client.edit_message_media(
+        await event.message.edit_message_media(
             chat_id=placeholder_message.chat.id,
             message_id=placeholder_message.message_id,
             media=InputMediaPhoto(
