@@ -85,6 +85,7 @@ async def send_details(client, event, id, page=1):
             #reply_markup=InlineKeyboardMarkup(rows)
         #)
     except Exception as e:
+        await event.message.reply_text(e)
         await event.message.edit_text(
             text,
             reply_markup=InlineKeyboardMarkup(rows),
