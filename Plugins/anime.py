@@ -54,6 +54,7 @@ async def event_handler_anime(client, message):
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
         except Exception as e:
+            print(e)
             await fetching_message.edit_text(
                 'Not Found, Check for Typos or search Japanese name',
                 reply_markup=InlineKeyboardMarkup([[
