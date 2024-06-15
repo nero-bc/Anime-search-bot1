@@ -125,10 +125,10 @@ async def send_download_link(client, query: CallbackQuery, anime_id, episode_num
                 link = download_links[i]
                 # Check if the link is valid
                 if link:
-                    if "360p" in text or "480p" in text or "720p" in text:
-                        row1.append(InlineKeyboardButton(f"{text}", url=link))
-                    elif "1080p" in text:
-                        row2.append(InlineKeyboardButton(f"{text}", url=link))
+                    if "360" in text or "480" in text or "720" in text:
+                        row1.append(InlineKeyboardButton(f"{text}p", url=link))
+                    elif "1080" in text:
+                        row2.append(InlineKeyboardButton(f"{text}p", url=link))
             except IndexError:
                 logging.error(f"IndexError at i={i}, download_qualities={download_qualities}, download_links={download_links}")
                 break  # Exit the loop if there's an IndexError
@@ -138,9 +138,9 @@ async def send_download_link(client, query: CallbackQuery, anime_id, episode_num
         
         # Add episode navigation buttons
         navigation_buttons = [
-            InlineKeyboardButton("Previous Episode", callback_data=f"Download:{anime_id}:{episode_num-1}"),
-            InlineKeyboardButton(f"Episode {episode_num}", callback_data="noop"),
-            InlineKeyboardButton("Next Episode", callback_data=f"Download:{anime_id}:{episode_num+1}")
+            InlineKeyboardButton("Previous", callback_data=f"Download:{anime_id}:{episode_num-1}"),
+            InlineKeyboardButton(f"Ep {episode_num}", callback_data="noop"),
+            InlineKeyboardButton("Next", callback_data=f"Download:{anime_id}:{episode_num+1}")
         ]
         buttons.append(navigation_buttons)
 
