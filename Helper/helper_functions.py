@@ -152,9 +152,9 @@ async def send_download_link(client, query: CallbackQuery, anime_id, episode_num
     except Exception as e:
         logging.error(f"An error occurred in send_download_link: {e}")
 
-@app.on_callback_query(filters.regex("Download|longdl"))
+"""@app.on_callback_query(filters.regex("Download|longdl"))
 async def callback_send_download_link(client, callback_query):
     data = callback_query.data.split(":")
     anime_id = data[1]
     episode_num = int(data[2])
-    await send_download_link(client, callback_query, anime_id, episode_num)
+    await send_download_link(client, callback_query, anime_id, episode_num)"""
