@@ -35,6 +35,10 @@ async def send_details(client, event, id, page=1):
     status = search_details.get('status')
     season = search_details.get('season')
     img = search_details.get('image_url')
+    
+    # Remove "Other name:" from other_names if it exists
+    if other_names and other_names.startswith("Other name:"):
+        other_names = other_names.replace("Other name:", "").strip()
     text = f"""
 <b>{title}</b>
 {other_names}
