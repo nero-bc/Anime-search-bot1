@@ -206,12 +206,12 @@ async def callback_for_downlink_long(client, callback_query):
             break
     await send_download_link(callback_query, id, x[1])
 
-@app.on_callback_query(filters.regex("dets:|Page:"))
+@app.on_callback_query(filters.regex("dets:"))
 async def callback_for_details(client, callback_query):
     data = callback_query.data.split(":")
     id = data[1]
     page = int(data[2]) if len(data) > 2 else 1
-    await send_details(client, callback_query, id, page)
+    await send_details(callback_query, id)
     
 @app.on_callback_query(filters.regex("split:"))
 async def callback_for_details_long(client, callback_query):
