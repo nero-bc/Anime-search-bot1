@@ -1,5 +1,5 @@
-from pyrogram import Client as app, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import Client as app, filters, enums
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from API.gogoanimeapi import Gogo
 import Helper.formating_results as format
 from database import ConfigDB
@@ -42,24 +42,69 @@ async def event_handler_anime(client, message):
         )
     else:
         anime_name = " ".join(message.text.split()[1:])
+        fetching_message = await message.reply_text('Fetching details...')
         search_result = gogo.get_search_results(anime_name)
         try:
             (names, ids) = format.format_search_results(search_result)
             buttons = []
             for i in range(len(names)):
-                buttons.append([InlineKeyboardButton(names[i], callback_data=f"dets:{ids[i]}")])
-            await message.reply_text(
+                buttons.append([InlineKeyboardButton(names[i], callback_data=f"dts:{ids[i]}")])
+            await fetching_message.edit_text(
                 'Search Results:',
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
         except Exception as e:
-            await message.reply_text(
+            await fetching_message.edit_text(
                 'Not Found, Check for Typos or search Japanese name',
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton("Example", url="https://media.giphy.com/media/4pk6ba2LUEMi4/giphy.gif")
                 ]])
             )
 
+@app.on_callback_query(filters.regex("dts:"))
+async def callback_for_details(client, callback_query):
+    mak = cdb.find({"_id": "GogoAnime"})
+    gogo = Gogo(
+        gogoanime_token=mak["gogoanime"],
+        auth_token=mak["auth"],
+        host=mak["url"]
+    )  # Fixed the missing closing parenthesis
+    data = callback_query.data.split(":")
+    anime_id = data[1]
+    
+    search_details = gogo.get_anime_details(anime_id)
+    formatted_details = format.format_anime_details(search_details)
+    genre = search_details.get('genres')
+    episodes = search_details.get('episodes')
+    title = search_details.get('title')
+    other_names = search_details.get('other_names')
+    year = search_details.get('year')
+    status = search_details.get('status')
+    season = search_details.get('season')
+    img = search_details.get('image_url')
+    if other_names and other_names.startswith("Other name:"):
+        other_names = other_names.replace("Other name:", "").strip()
+
+    text = f"""
+<b>{title}</b>
+{other_names}
+
+<b>ID→</b> <code>{anime_id}</code>  # Changed id to anime_id
+<b>Type→</b> {season}
+<b>Status→</b> {status}
+<b>Released→</b> {year}
+<b>Episodes→</b> {episodes}
+<b>Genres→</b> {genre}
+"""   
+    buttons = [
+        [InlineKeyboardButton("Episodes", callback_data=f"dets:{anime_id}")],[InlineKeyboardButton("View on Web", url=search_details['url'])]
+    ]
+    await callback_query.message.reply_photo(  # Fixed event.message to callback_query.message
+        photo=img,
+        caption=text,
+        parse_mode=enums.ParseMode.HTML,  # Corrected enums.ParseMode.HTML
+        reply_markup=InlineKeyboardMarkup(buttons)
+    )
 
 @app.on_message(filters.command(["batch"]))
 async def event_handler_batch(client, message):
@@ -205,14 +250,14 @@ async def callback_for_downlink_long(client, callback_query):
             id = i
             break
     await send_download_link(callback_query, id, x[1])
-
+    
 @app.on_callback_query(filters.regex("dets:|Page:"))
 async def callback_for_details(client, callback_query):
     data = callback_query.data.split(":")
-    id = data[1]
+    anime_id = data[1]  # Changed id to anime_id
     page = int(data[2]) if len(data) > 2 else 1
-    await send_details(client, callback_query, id, page)
-    
+    await send_details(client, callback_query, anime_id, page)  # Changed id to anime_id
+
 @app.on_callback_query(filters.regex("split:"))
 async def callback_for_details_long(client, callback_query):
     data = callback_query.data
