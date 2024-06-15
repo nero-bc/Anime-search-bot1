@@ -1,6 +1,6 @@
 import logging
 from pyrogram import Client as app, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from Helper import formating_results as format
 from database import ConfigDB
 from API.gogoanimeapi import Gogo
@@ -35,10 +35,11 @@ async def send_details(client, event, id, page=1):
     status = search_details.get('status')
     season = search_details.get('season')
     img = search_details.get('image_url')
-    
+
     # Remove "Other name:" from other_names if it exists
     if other_names and other_names.startswith("Other name:"):
         other_names = other_names.replace("Other name:", "").strip()
+
     text = f"""
 <b>{title}</b>
 {other_names}
@@ -114,17 +115,34 @@ async def send_download_link(client, query: CallbackQuery, anime_id, episode_num
 
         buttons = []
         
-        # Add download links to buttons
+        # Arrange download links buttons
+        row1 = []
+        row2 = []
+        
         for i in range(len(download_links)):
             try:
                 text = download_qualities[i]
                 link = download_links[i]
                 # Check if the link is valid
                 if link:
-                    buttons.append([InlineKeyboardButton(f"{text}", url=link)])
+                    if "360p" in text or "480p" in text or "720p" in text:
+                        row1.append(InlineKeyboardButton(f"{text}", url=link))
+                    elif "1080p" in text:
+                        row2.append(InlineKeyboardButton(f"{text}", url=link))
             except IndexError:
                 logging.error(f"IndexError at i={i}, download_qualities={download_qualities}, download_links={download_links}")
                 break  # Exit the loop if there's an IndexError
+
+        buttons.append(row1)
+        buttons.append(row2)
+        
+        # Add episode navigation buttons
+        navigation_buttons = [
+            InlineKeyboardButton("Previous Episode", callback_data=f"Download:{anime_id}:{episode_num-1}"),
+            InlineKeyboardButton(f"Episode {episode_num}", callback_data="noop"),
+            InlineKeyboardButton("Next Episode", callback_data=f"Download:{anime_id}:{episode_num+1}")
+        ]
+        buttons.append(navigation_buttons)
 
         # Send message with buttons
         await query.message.edit_caption(
