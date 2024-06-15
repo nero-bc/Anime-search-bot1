@@ -69,18 +69,24 @@ async def event_handler_anime(client, message):
         )
 
 @app.on_callback_query(filters.regex("dts:"))
+@app.on_callback_query(filters.regex("dts:"))
 async def callback_for_details(client, callback_query):
     try:
+        data = callback_query.data.split(":")
+        anime_id = data[1]
+        
+        # Assuming you have the ConfigDB and Gogo instance accessible
         mak = cdb.find({"_id": "GogoAnime"})
         gogo = Gogo(
             gogoanime_token=mak["gogoanime"],
             auth_token=mak["auth"],
             host=mak["url"]
         )
-        data = callback_query.data.split(":")
-        anime_id = data[1]
-
+        
+        # Get anime details using gogo.get_anime_details(anime_id)
         search_details = gogo.get_anime_details(anime_id)
+        
+        # Format the details into text and buttons
         formatted_details = format.format_anime_details(search_details)
         genre = search_details.get('genres')
         episodes = search_details.get('episodes')
@@ -90,33 +96,41 @@ async def callback_for_details(client, callback_query):
         status = search_details.get('status')
         season = search_details.get('season')
         img = search_details.get('image_url')
+        
         if other_names and other_names.startswith("Other name:"):
             other_names = other_names.replace("Other name:", "").strip()
 
         text = f"""
-<b>{title}</b>
-{other_names}
+        <b>{title}</b>
+        {other_names}
 
-<b>ID→</b> <code>{anime_id}</code>
-<b>Type→</b> {season}
-<b>Status→</b> {status}
-<b>Released→</b> {year}
-<b>Episodes→</b> {episodes}
-<b>Genres→</b> {genre}
-"""
+        <b>ID→</b> <code>{anime_id}</code>
+        <b>Type→</b> {season}
+        <b>Status→</b> {status}
+        <b>Released→</b> {year}
+        <b>Episodes→</b> {episodes}
+        <b>Genres→</b> {genre}
+        """
+        
         buttons = [
             [InlineKeyboardButton("Episodes", callback_data=f"dets:{anime_id}")],
             [InlineKeyboardButton("View on Web", url=search_details['url'])]
         ]
+        
         await callback_query.message.reply_photo(
             photo=img,
             caption=text,
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(buttons)
         )
+    
     except Exception as e:
-        logging.error(f"Error in callback_for_details: {e}")
-        await callback_query.message.reply_text("An error occurred while fetching anime details.")
+        print(f"Error in callback_for_details: {e}")
+        # Handle the error, perhaps send a message to the user indicating the error
+        
+    finally:
+        # Always answer the callback query, even if an error occurs
+        await callback_query.answer()
 
 @app.on_message(filters.command(["batch"]))
 async def event_handler_batch(client, message):
