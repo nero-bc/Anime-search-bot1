@@ -124,7 +124,7 @@ async def send_download_link(client, query: CallbackQuery, anime_id, episode_num
 
         # Send message with buttons
         await query.message.edit_caption(
-            text="Available Links:",
+            caption=f"Available Links for {anime_id}\nEpisode number {episode_num}",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
     except Exception as e:
